@@ -48,13 +48,16 @@ def get_submissions():
         headers=HEADERS,
         json={"query": QUERY},
     )
-    return r.json()["data"]["recentAcSubmissionList"]
+    data = r.json()
+    print("API response:", data)   # 👈 shows what LeetCode returns
+    return data["data"]["recentAcSubmissionList"]
 
 def slugify(title):
     return re.sub(r"[^a-z0-9]+", "_", title.lower()).strip("_")
 
 Path(FOLDER).mkdir(exist_ok=True)
 submissions = get_submissions()
+print(f"Total accepted submissions found: {len(submissions)}")  # 👈 shows count
 total = 0
 
 for s in submissions:

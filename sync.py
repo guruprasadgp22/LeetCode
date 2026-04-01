@@ -1,14 +1,17 @@
-import os, requests, re
+import os, requests, re, sys
 from pathlib import Path
 
-SESSION = os.environ["LEETCODE_SESSION"]
-CSRF    = os.environ["LEETCODE_CSRF_TOKEN"]
+SESSION = os.environ.get("LEETCODE_SESSION", "")
+CSRF    = os.environ.get("LEETCODE_CSRF_TOKEN", "")
 FOLDER  = "LeetCode"
+USERNAME = "guruprasadgp22"
+
 HEADERS = {
     "Content-Type": "application/json",
     "Cookie": f"csrftoken={CSRF}; LEETCODE_SESSION={SESSION}",
     "x-csrftoken": CSRF,
     "Referer": "https://leetcode.com",
+    "User-Agent": "Mozilla/5.0",
 }
 
 EXT = {
@@ -18,17 +21,25 @@ EXT = {
     "kotlin": "kt", "rust": "rs", "php": "php",
 }
 
-QUERY = """
-query {
-  recentAcSubmissionList(username: "guruprasadgp22", limit: 1000) {
-    id title titleSlug lang
-  }
-}
-"""
+def get_submissions():
+    query = """
+    query ($username: String!) {
+      recentAcSubmissionList(username: $username, limit: 1000) {
+        id title titleSlug lang
+      }
+    }
+    """
+    r = requests.post(
+        "https://leetcode.com/graphql",
+        headers=HEADERS,
+        json={"query": query, "variables": {"username": USERNAME}},
+        timeout=30,
+    )
+    return r.json()["data"]["recentAcSubmissionList"]
 
 def get_code(submission_id):
-    q = """
-    query submissionDetails($submissionId: Int!) {
+    query = """
+    query ($submissionId: Int!) {
       submissionDetails(submissionId: $submissionId) {
         code
       }
@@ -37,28 +48,28 @@ def get_code(submission_id):
     r = requests.post(
         "https://leetcode.com/graphql",
         headers=HEADERS,
-        json={"query": q, "variables": {"submissionId": int(submission_id)}},
+        json={"query": query, "variables": {"submissionId": int(submission_id)}},
+        timeout=30,
     )
     data = r.json()
-    return data["data"]["submissionDetails"]["code"]
-
-def get_submissions():
-    r = requests.post(
-        "https://leetcode.com/graphql",
-        headers=HEADERS,
-        json={"query": QUERY},
-    )
-    data = r.json()
-    print("API response:", data)   # 👈 shows what LeetCode returns
-    return data["data"]["recentAcSubmissionList"]
+    details = data.get("data", {}).get("submissionDetails")
+    if not details:
+        print(f"  WARNING: Could not fetch code — cookies may be expired or empty.")
+        return None
+    return details["code"]
 
 def slugify(title):
     return re.sub(r"[^a-z0-9]+", "_", title.lower()).strip("_")
 
+if not SESSION or not CSRF:
+    print("ERROR: LEETCODE_SESSION or LEETCODE_CSRF_TOKEN is empty!")
+    print("Go to repo Settings → Secrets and add them.")
+    sys.exit(1)
+
 Path(FOLDER).mkdir(exist_ok=True)
 submissions = get_submissions()
-print(f"Total accepted submissions found: {len(submissions)}")  # 👈 shows count
-total = 0
+print(f"Found {len(submissions)} accepted submissions.")
+total, failed = 0, 0
 
 for s in submissions:
     ext  = EXT.get(s["lang"], "txt")
@@ -66,8 +77,11 @@ for s in submissions:
     path = Path(FOLDER) / name
     if not path.exists():
         code = get_code(s["id"])
-        path.write_text(code, encoding="utf-8")
-        print(f"Saved: {name}")
-        total += 1
+        if code:
+            path.write_text(code, encoding="utf-8")
+            print(f"Saved: {name}")
+            total += 1
+        else:
+            failed += 1
 
-print(f"Done. {total} new solutions saved.")
+print(f"Done. {total} saved, {failed} failed (fix cookies if failed > 0).")

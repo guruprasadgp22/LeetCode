@@ -1,20 +1,21 @@
 name: Sync LeetCode
 on:
-  workflow_dispatch:   # Run manually
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"   # Runs daily at midnight UTC
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # fixes Node.js 20 deprecation
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Sync LeetCode submissions
       - name: Sync LeetCode submissions
-        uses: joshcai/leetcode-sync@v1.7
+        uses: guruprasadgp22/leetcode-sync@v1.7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           leetcode-csrf-token: ${{ secrets.LEETCODE_CSRF_TOKEN }}

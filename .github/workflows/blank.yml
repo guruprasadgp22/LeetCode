@@ -16,7 +16,7 @@ jobs:
 
       # 2. Sync LeetCode submissions
       - name: Sync LeetCode submissions
-        uses: guruprasadgp22/leetcode-sync@v1
+        uses: guruprasadgp22/LeetCode@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           leetcode-session: ${{ secrets.LEETCODE_SESSION }}

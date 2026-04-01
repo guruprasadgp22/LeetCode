@@ -20,7 +20,7 @@ EXT = {
 
 QUERY = """
 query {
-  recentAcSubmissionList(username: "", limit: 1000) {
+  recentAcSubmissionList(username: "guruprasadgp22", limit: 1000) {
     id title titleSlug lang
   }
 }

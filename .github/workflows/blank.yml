@@ -1,5 +1,4 @@
 name: Sync LeetCode
-
 on:
   workflow_dispatch:   # Run manually
   schedule:
@@ -8,7 +7,6 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
       # 1. Checkout repo
       - name: Checkout repository
@@ -16,18 +14,10 @@ jobs:
 
       # 2. Sync LeetCode submissions
       - name: Sync LeetCode submissions
-        uses: guruprasadgp22/LeetCode@v1
+        uses: joshcai/leetcode-sync@v1.21
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          leetcode-csrf-token: ${{ secrets.LEETCODE_CSRF_TOKEN }}
           leetcode-session: ${{ secrets.LEETCODE_SESSION }}
           destination-folder: LeetCode
           verbose: true
-
-      # 3. Commit & push if changes exist
-      - name: Commit and push changes
-        run: |
-          git config --global user.name "Guruprasad GP"
-          git config --global user.email "guruprasad6200@gmail.com"
-          git add .
-          git commit -m "sync: update leetcode solutions" || echo "No changes"
-          git push

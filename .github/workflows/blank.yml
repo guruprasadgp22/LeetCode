@@ -1,11 +1,8 @@
-name: blank LeetCode
+name: Sync LeetCode
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   sync:
@@ -14,11 +11,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Sync LeetCode submissions
-        uses: joshcai/leetcode-sync@v1.7
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          leetcode-csrf-token: ${{ secrets.LEETCODE_CSRF_TOKEN }}
-          leetcode-session: ${{ secrets.LEETCODE_SESSION }}
-          destination-folder: LeetCode
-          verbose: true
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Sync LeetCode submissions
+        env:
+          LEETCODE_SESSION: ${{ secrets.LEETCODE_SESSION }}
+          LEETCODE_CSRF_TOKEN: ${{ secrets.LEETCODE_CSRF_TOKEN }}
+        run: python sync.py
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "Guruprasad GP"
+          git config --global user.email "guruprasad6200@gmail.com"
+          git add .
+          git diff --cached --quiet || git commit -m "sync: update leetcode solutions"
+          git push

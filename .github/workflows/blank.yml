@@ -1,0 +1,33 @@
+name: Sync LeetCode
+
+on:
+  workflow_dispatch:   # Run manually
+  schedule:
+    - cron: "0 0 * * *"   # Runs daily at midnight UTC
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Sync LeetCode submissions
+      - name: Sync LeetCode submissions
+        uses: anishLearnsToCode/leetcode-sync@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          leetcode-session: ${{ secrets.LEETCODE_SESSION }}
+          destination-folder: leetcode-solutions
+          verbose: true
+
+      # 3. Commit & push if changes exist
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "sync: update leetcode solutions" || echo "No changes"
+          git push

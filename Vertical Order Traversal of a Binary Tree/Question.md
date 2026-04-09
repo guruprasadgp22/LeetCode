@@ -53,8 +53,10 @@ Column -1: Only node 9 is in this column.
 Column 0: Nodes 3 and 15 are in this column in that order from top to bottom.
 Column 1: Only node 20 is in this column.
 Column 2: Only node 7 is in this column.
-Example 2
 ```
+## Example 2
+![Example 1](https://assets.leetcode.com/uploads/2021/01/29/vtree2.jpg)
+
 **Input:**
 ```text
 root = [1,2,3,4,5,6,7]

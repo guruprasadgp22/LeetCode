@@ -39,3 +39,36 @@ Return the vertical order traversal of the binary tree.
 **Input:**  
 ```text
 root = [3,9,20,null,null,15,7]
+```
+**Output:**
+
+```text
+[[9],[3,15],[20],[7]]
+```
+
+## Explanation:
+
+```
+Column -1: Only node 9 is in this column.
+Column 0: Nodes 3 and 15 are in this column in that order from top to bottom.
+Column 1: Only node 20 is in this column.
+Column 2: Only node 7 is in this column.
+Example 2
+```
+**Input:**
+```text
+root = [1,2,3,4,5,6,7]
+```
+**Output:**
+```text
+[[4],[2],[1,5,6],[3],[7]]
+```
+## Explanation:
+```
+Column -2: Only node 4
+Column -1: Only node 2
+Column 0: Nodes 1, 5, and 6
+Column 1: Only node 3
+Column 2: Only node 7
+```
+---

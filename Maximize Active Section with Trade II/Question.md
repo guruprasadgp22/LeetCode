@@ -93,7 +93,6 @@ Explanation:
   The final string without augmentation is `"01111"`. The maximum number of active sections is 4.
 * Query `[1, 3]` → Substring `"101"` → Augmented to `"11011"`.
   Because there is no block of `'1'`s surrounded by `'0'`s, no valid trade is possible. The maximum number of active sections is 2.
-
 ## Constraints
 
 * `1 <= n == s.length <= 10^5`

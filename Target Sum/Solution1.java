@@ -5,6 +5,7 @@ class Solution {
             sum += ele;
         }
 
+        target = Math.abs(target);
         if((sum + target)% 2 != 0) {
             return 0;
         }

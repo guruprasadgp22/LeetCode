@@ -3,7 +3,7 @@ class Solution {
     int[][] dp;
     public int minimumChanges(String s, int k) {
         n = s.length();
-        dp = new int[n+1][n+1];
+        dp = new int[n+1][k+1];
         for(int[] x: dp) {
             Arrays.fill(x, -1);
         }
